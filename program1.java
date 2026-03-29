@@ -3,7 +3,7 @@ public class program1{
         System.out.println("Jenkins Q4");
         System.out.println("POLL SCM Test");
         System.out.println("Webhook Test 1");
-        System.out.println("Webhook Test 2 (using pipeline)");
+        System.out.println("Webhook Test 2 (using pipeline 1)");
     }
 }
 
