@@ -1,29 +1,30 @@
-pipeline{
-  agent any
-  stages{
-    stage('checkout'){
-      steps{
-        git url:'https://https://github.com/Srinidhi-Padmanabhan-1/DevOps_course.git',branch:'main'
-      }
+pipeline {
+    agent any
+    triggers {
+        githubPush()
     }
-
-    stage('Build Image'){
-      steps{
-        bat 'docker build -t mywebsite .'
-      }
-  }
-
-    stage('Stop Old Containers'){
-      steps{
-        bat 'docker stop myimage1 || exit 0'
-        bat 'docker rm myimage1 || exit 0'
-      }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Pulls the code from your GitHub repo
+                checkout scm
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                // Builds the Docker image from the Dockerfile
+                bat 'docker build -t my-automated-node-app .'
+            }
+        }
+        stage('Deploy Docker Container') {
+            steps {
+                // Stops and removes the old container if it exists, then runs the new one
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+                    bat 'docker stop running-node-app'
+                    bat 'docker rm running-node-app'
+                }
+                bat 'docker run -d -p 3050:3000 --name running-node-app my-automated-node-app'
+            }
+        }
     }
-
-    stage('Run Image - Containerize'){
-      steps{
-        bat 'docker run -d -p 7000:80 --name mycont mywebsite'
-      }
-    }
-}
 }
